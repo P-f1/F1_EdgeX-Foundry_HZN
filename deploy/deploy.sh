@@ -23,3 +23,6 @@ hzn exchange service publish -P -o $HZN_ORG_ID -u $HZN_EXCHANGE_USER_AUTH -f con
 
 # Publish the deployment policy
 hzn exchange deployment addpolicy -o $HZN_ORG_ID -u $HZN_EXCHANGE_USER_AUTH -f configuration/deployment.policy.json myorg/policy-com.github.joewxboy.horizon.edgex_1.0.1_amd64
+
+hzn exchange service list -o $HZN_ORG_ID -u $HZN_EXCHANGE_USER_AUTH
+hzn exchange deployment listpolicy -o $HZN_ORG_ID -u $HZN_EXCHANGE_USER_AUTH
