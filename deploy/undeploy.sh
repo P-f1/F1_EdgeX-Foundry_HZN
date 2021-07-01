@@ -16,5 +16,5 @@ echo "HZN_EXCHANGE_USER_AUTH="$HZN_EXCHANGE_USER_AUTH
 echo "Undeploy Through Open Horizon Exchange !!"
 hzn unregister -o $HZN_ORG_ID -u $HZN_EXCHANGE_USER_AUTH -f
 
-hzn exchange deployment removepolicy  -v -f -o $HZN_ORG_ID -u $HZN_EXCHANGE_USER_AUTH policy-com.github.joewxboy.horizon.edgex_1.0.1
-hzn exchange service remove -v -f -o $HZN_ORG_ID -u $HZN_EXCHANGE_USER_AUTH com.github.joewxboy.horizon.edgex_1.0.1
+hzn exchange deployment removepolicy  -v -f -o $HZN_ORG_ID -u $HZN_EXCHANGE_USER_AUTH policy-com.github.joewxboy.horizon.edgex_1.0.1_amd64
+hzn exchange service remove -v -f -o $HZN_ORG_ID -u $HZN_EXCHANGE_USER_AUTH com.github.joewxboy.horizon.edgex_1.0.1_amd64
