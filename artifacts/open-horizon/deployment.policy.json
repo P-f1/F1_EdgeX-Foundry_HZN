@@ -1,0 +1,32 @@
+{
+    "label": "",
+    "description": "",
+    "service": {
+        "name": "$ServiceName",
+        "org": "$HZN_ORG_ID",
+        "arch": "$Arch",
+        "serviceVersions": [
+            {
+                "version": "$ServiceVersion",
+                "priority": {}
+            }
+        ]
+    },
+    "properties": [],
+    "userInput": [
+        {
+            "serviceOrgid": "$HZN_ORG_ID",
+            "serviceUrl": "$ServiceName",
+            "serviceVersionRange": "[0.0.0,INFINITY)",
+            "inputs": [
+                {
+                    "name": "HW_WHO",
+                    "value": "Valued Customer"
+                }
+            ]
+        }
+    ],
+    "constraints": [
+        "role == RTSF_Demo"
+    ]
+}

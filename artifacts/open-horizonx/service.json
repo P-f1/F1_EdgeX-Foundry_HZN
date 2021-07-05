@@ -1,0 +1,175 @@
+{
+    "org": "${HZN_ORG_ID}",
+    "label": "edgex",
+    "description": "EdgeX Foundry service",
+    "documentation": "",
+    "url": "com.github.joewxboy.horizon.edgex",
+    "version": "1.0.1",
+    "arch": "amd64",
+    "sharable": "multiple",
+    "userInput": [
+      { "name": "EDGEX_SECURITY_SECRET_STORE", "label": "", "type": "string", "defaultValue": "false" },
+      { "name": "Registry_Host", "label": "", "type": "string", "defaultValue": "edgex-core-consul" },
+      { "name": "Clients_CoreData_Host", "label": "", "type": "string", "defaultValue": "edgex-core-data" },
+      { "name": "Clients_Data_Host", "label": "", "type": "string", "defaultValue": "edgex-core-data" },
+      { "name": "Clients_Notifications_Host", "label": "", "type": "string", "defaultValue": "edgex-support-notifications" },
+      { "name": "Clients_Metadata_Host", "label": "logging level", "type": "string", "defaultValue": "edgex-core-metadata" },
+      { "name": "Clients_Command_Host", "label": "where to log", "type": "string", "defaultValue": "edgex-core-command" },
+      { "name": "Clients_Scheduler_Host", "label": "", "type": "string", "defaultValue": "edgex-support-scheduler" },
+      { "name": "Clients_RulesEngine_Host", "label": "", "type": "string", "defaultValue": "edgex-kuiper" },
+      { "name": "Clients_VirtualDevice_Host", "label": "", "type": "string", "defaultValue": "edgex-device-virtual" },
+      { "name": "Databases_Primary_Host", "label": "logging level", "type": "string", "defaultValue": "edgex-redis" },
+      { "name": "Logging_EnableRemote", "label": "where to log", "type": "string", "defaultValue": "false" }
+    ],
+    "deployment": {
+      "services": {
+        "edgex-core-consul": {
+          "image": "edgexfoundry/docker-edgex-consul:1.2.0",
+          "privileged": true,
+          "network": "hostx",
+          "specific_ports": [
+            { "HostPort": "8400/tcp", "HostIP": "127.0.0.1" },
+            { "HostPort": "8500/tcp", "HostIP": "0.0.0.0" }
+          ],
+          "binds": [
+            "consul-config:/consul/config:z",
+            "consul-data:/consul/data:z"
+          ],
+          "environment": [
+            "EDGEX_DB=redis",
+            "EDGEX_SECURE=false"
+          ]
+        },
+        "edgex-redis": {
+          "image": "redis:5.0.8-alpine",
+          "privileged": true,
+          "network": "hostx",
+          "specific_ports": [
+            { "HostPort": "6379/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+            "db-data:/data:z"
+          ],
+          "environment": [
+          ]
+        },
+        "edgex-support-notifications": {
+          "image": "edgexfoundry/docker-support-notifications-go:1.2.1",
+          "privileged": true,
+          "network": "hostx",
+          "specific_ports": [
+            { "HostPort": "48060/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+            "db-data:/data:z"
+          ],
+          "environment": [
+            "Service_Host=edgex-support-notifications"
+          ]
+        },
+        "edgex-core-metadata": {
+          "image": "edgexfoundry/docker-core-metadata-go:1.2.1",
+          "privileged": true,
+          "network": "hostx",
+          "specific_ports": [
+            { "HostPort": "48081/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+          ],
+          "environment": [
+            "Service_Host=edgex-core-metadata",
+            "Service_Timeout=20000",
+            "Notifications_Sender=edgex-core-metadata"
+          ]
+        },
+        "edgex-core-data": {
+          "image": "edgexfoundry/docker-core-data-go:1.2.1",
+          "privileged": true,
+          "network": "hostx",
+          "specific_ports": [
+            { "HostPort": "48080/tcp", "HostIP": "127.0.0.1" },
+            { "HostPort": "5563/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+          ],
+          "environment": [
+            "Service_Host=edgex-core-data"
+          ]
+        },
+        "edgex-core-command": {
+          "image": "edgexfoundry/docker-core-command-go:1.2.1",
+          "privileged": true,
+          "network": "hostx",
+          "specific_ports": [
+            { "HostPort": "48082/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+          ],
+          "environment": [
+            "Service_Host=edgex-core-command"
+          ]
+        },
+        "edgex-support-scheduler": {
+          "image": "edgexfoundry/docker-support-scheduler-go:1.2.1",
+          "privileged": true,
+          "network": "hostx",
+          "specific_ports": [
+            { "HostPort": "48085/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+          ],
+          "environment": [
+            "Service_Host=edgex-support-scheduler",
+            "IntervalActions_ScrubPushed_Host=edgex-core-data",
+            "IntervalActions_ScrubAged_Host=edgex-core-data"
+          ]
+        },
+        "mqtt": {
+          "image": "eclipse-mosquitto:1.5.8",
+          "privileged": true,
+          "network": "hostx",
+          "specific_ports": [
+            { "HostPort": "1883/tcp", "HostIP": "127.0.0.0" }
+          ],
+          "binds": [
+          ],
+          "environment": [
+          ]
+        },
+        "edgex-device-rest": {
+          "image": "edgexfoundry/docker-device-rest-go:1.1.1",
+          "privileged": true,
+          "network": "hostx",
+          "specific_ports": [
+            { "HostPort": "49986/tcp", "HostIP": "0.0.0.0" }
+          ],
+          "binds": [
+            "${Artifacts}/res/device-rest-go/:/res/"
+          ],
+          "environment": [
+            "Service_Host=edgex-device-rest"
+          ]
+        },
+        "edgex-device-mqtt": {
+          "image": "edgexfoundry/docker-device-mqtt-go:1.2.1",
+          "privileged": true,
+          "network": "hostx",
+          "specific_ports": [
+            { "HostPort": "49982/tcp", "HostIP": "0.0.0.0" }
+          ],
+          "binds": [
+            "${Artifacts}/res/device-mqtt-go/:/res/"
+          ],
+          "environment": [
+            "Service_Host=edgex-device-mqtt",
+            "Driver_IncomingHost=mqtt",
+            "Driver_ResponseHost=mqtt",
+            "Driver_IncomingTopic=edgex/#",
+            "Driver_IncomingClientId=edgex-mqtt-sub",
+            "Driver_ResponseClientId=edgex-mqtt-command-sub",
+            "Driver_ResponseTopic=Edgex-command-response"
+          ]
+        }
+      }
+    }
+}

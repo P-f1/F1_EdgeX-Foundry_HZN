@@ -1,0 +1,137 @@
+{
+    "org": "${HZN_ORG_ID}",
+    "label": "edgex",
+    "description": "EdgeX Foundry service",
+    "documentation": "",
+    "url": "com.github.joewxboy.horizon.edgex",
+    "version": "1.0.1",
+    "arch": "amd64",
+    "sharable": "multiple",
+    "userInput": [
+      { "name": "EDGEX_SECURITY_SECRET_STORE", "label": "", "type": "string", "defaultValue": "false" },
+      { "name": "Registry_Host", "label": "", "type": "string", "defaultValue": "127.0.0.1" },
+      { "name": "Clients_CoreData_Host", "label": "", "type": "string", "defaultValue": "127.0.0.1" },
+      { "name": "Clients_Data_Host", "label": "", "type": "string", "defaultValue": "127.0.0.1" },
+      { "name": "Clients_Notifications_Host", "label": "", "type": "string", "defaultValue": "127.0.0.1" },
+      { "name": "Clients_Metadata_Host", "label": "logging level", "type": "string", "defaultValue": "127.0.0.1" },
+      { "name": "Clients_Command_Host", "label": "where to log", "type": "string", "defaultValue": "127.0.0.1" },
+      { "name": "Clients_Scheduler_Host", "label": "", "type": "string", "defaultValue": "127.0.0.1" },
+      { "name": "Clients_RulesEngine_Host", "label": "", "type": "string", "defaultValue": "127.0.0.1" },
+      { "name": "Clients_VirtualDevice_Host", "label": "", "type": "string", "defaultValue": "127.0.0.1" },
+      { "name": "Databases_Primary_Host", "label": "logging level", "type": "string", "defaultValue": "127.0.0.1" },
+      { "name": "Logging_EnableRemote", "label": "where to log", "type": "string", "defaultValue": "false" }
+    ],
+    "deployment": {
+      "services": {
+        "edgex-core-consul": {
+          "image": "edgexfoundry/docker-edgex-consul:1.2.0",
+          "privileged": true,
+          "network": "host",
+          "ports": [
+            { "HostPort": "8400/tcp", "HostIP": "127.0.0.1" },
+            { "HostPort": "8500/tcp", "HostIP": "0.0.0.0" }
+          ],
+          "environment": [
+            "EDGEX_DB=redis",
+            "EDGEX_SECURE=false"
+          ]
+        },
+        "edgex-redis": {
+          "image": "redis:5.0.8-alpine",
+          "privileged": true,
+          "network": "host",
+          "ports": [
+            { "HostPort": "6379/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+            "db-data:/data:z"
+          ],
+          "environment": [
+          ]
+        },
+        "edgex-support-notifications": {
+          "image": "edgexfoundry/docker-support-notifications-go:1.2.1",
+          "privileged": true,
+          "network": "host",
+          "ports": [
+            { "HostPort": "48060/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+            "db-data:/data:z"
+          ],
+          "environment": [
+            "Service_Host=127.0.0.1"
+          ]
+        },
+        "edgex-core-metadata": {
+          "image": "edgexfoundry/docker-core-metadata-go:1.2.1",
+          "privileged": true,
+          "network": "host",
+          "ports": [
+            { "HostPort": "48081/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+          ],
+          "environment": [
+            "Service_Host=127.0.0.1",
+            "Service_Timeout=20000",
+            "Notifications_Sender=127.0.0.1"
+          ]
+        },
+        "edgex-core-data": {
+          "image": "edgexfoundry/docker-core-data-go:1.2.1",
+          "privileged": true,
+          "network": "host",
+          "ports": [
+            { "HostPort": "48080/tcp", "HostIP": "127.0.0.1" },
+            { "HostPort": "5563/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+          ],
+          "environment": [
+            "Service_Host=127.0.0.1"
+          ]
+        },
+        "edgex-core-command": {
+          "image": "edgexfoundry/docker-core-command-go:1.2.1",
+          "privileged": true,
+          "network": "host",
+          "ports": [
+            { "HostPort": "48082/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+          ],
+          "environment": [
+            "Service_Host=127.0.0.1"
+          ]
+        },
+        "edgex-support-scheduler": {
+          "image": "edgexfoundry/docker-support-scheduler-go:1.2.1",
+          "privileged": true,
+          "network": "host",
+          "ports": [
+            { "HostPort": "48085/tcp", "HostIP": "127.0.0.1" }
+          ],
+          "binds": [
+          ],
+          "environment": [
+            "Service_Host=127.0.0.1",
+            "IntervalActions_ScrubPushed_Host=127.0.0.1",
+            "IntervalActions_ScrubAged_Host=127.0.0.1"
+          ]
+        },
+        "mqtt": {
+          "image": "eclipse-mosquitto:1.5.8",
+          "privileged": true,
+          "network": "host",
+          "ports": [
+            { "HostPort": "1883/tcp", "HostIP": "127.0.0.0" }
+          ],
+          "binds": [
+          ],
+          "environment": [
+          ]
+        }      
+      }
+    }
+}
